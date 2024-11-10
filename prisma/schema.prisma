@@ -1,0 +1,80 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Provider {
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  dataPoints DataPoint[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model DataPoint {
+  id         Int      @id @default(autoincrement())
+  provider   Provider @relation(fields: [providerId], references: [id])
+  providerId Int
+  assetClass String
+  quarter    String
+  minPrice   Float
+  maxPrice   Float
+  date       DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([assetClass, quarter])
+}
+
+model Report {
+  id                 Int                @id @default(autoincrement())
+  name               String
+  assetClass         String
+  quarter            String
+  date               DateTime           @default(now())
+  status             ReportStatus       @default(DRAFT)
+  marketAverage      Float
+  finalPrice         Float
+  priceRangeMin      Float
+  priceRangeMax      Float
+  deferralPrice      Float
+  deferralRangeMin   Float
+  deferralRangeMax   Float
+  volatilityScore    Float
+  qualitativeFactors QualitativeFactor[]
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([assetClass, quarter])
+}
+
+model QualitativeFactor {
+  id       Int     @id @default(autoincrement())
+  report   Report  @relation(fields: [reportId], references: [id])
+  reportId Int
+  name     String
+  score    Float
+  weight   Float
+}
+
+model Settings {
+  id                Int      @id @default(autoincrement())
+  assetClass        String   @unique
+  sMax             Float
+  aNegative        Float
+  aPositive        Float
+  m                Float
+  adjustmentPerUnit Float
+  weights          Json
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+enum ReportStatus {
+  DRAFT
+  FINAL
+} 
