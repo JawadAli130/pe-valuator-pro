@@ -14,13 +14,6 @@ export function ReportSummary({ report }: ReportSummaryProps) {
           <h3 className="text-lg font-medium text-gray-900">{report.name}</h3>
           <p className="mt-1 text-sm text-gray-500">{report.date}</p>
         </div>
-        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-          report.status === 'final' 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-yellow-100 text-yellow-800'
-        }`}>
-          {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
-        </span>
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-6">

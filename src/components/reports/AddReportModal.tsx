@@ -101,6 +101,9 @@ export function AddReportModal({
             {newReport.qualitativeFactors.map((factor, index) => (
               <div key={index} className="grid grid-cols-12 gap-4 mb-4">
                 <div className="col-span-5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Factor Type
+                  </label>
                   <select
                     value={factor.name}
                     onChange={(e) => onUpdateQualitativeFactor(index, 'name', e.target.value)}
@@ -114,18 +117,25 @@ export function AddReportModal({
                   </select>
                 </div>
                 <div className="col-span-5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Score (-5 to +5)
+                  </label>
                   <input
-                    type="number"
-                    min="-5"
-                    max="5"
-                    step="0.01"
-                    value={factor.score}
-                    onChange={(e) => onUpdateQualitativeFactor(index, 'score', parseFloat(e.target.value))}
+                    type="text"
+                    value={factor.score === '' ? '' : String(factor.score)}
+                    onChange={(e) => onUpdateQualitativeFactor(index, 'score', e.target.value)}
+                    onBlur={(e) => {
+                      const num = parseFloat(e.target.value);
+                      if (isNaN(num)) {
+                        onUpdateQualitativeFactor(index, 'score', 0);
+                      } else {
+                        onUpdateQualitativeFactor(index, 'score', num);
+                      }
+                    }}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    placeholder="Score (-5 to +5)"
                   />
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-2 mt-8">
                   <button
                     type="button"
                     onClick={() => onRemoveQualitativeFactor(index)}

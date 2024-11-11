@@ -10,7 +10,6 @@ export interface Report {
   assetClass: string;
   quarter: string;
   date: string;
-  status: 'draft' | 'final';
   marketAverage: number;
   finalPrice: number;
   priceRangeMin: number;

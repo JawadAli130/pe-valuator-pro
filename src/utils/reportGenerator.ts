@@ -38,7 +38,6 @@ export function generateReport(
       hour: '2-digit',
       minute: '2-digit'
     }),
-    status: 'draft',
     qualitativeFactors,
     volatilityScore,
     marketAverage: pricingResult.marketAverage,

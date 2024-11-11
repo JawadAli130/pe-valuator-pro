@@ -69,7 +69,7 @@ export function calculatePriceRange(
 }
 
 export function calculateDeferralPrice(price: number): number {
-  return price * 1.03; // 3% deferral adjustment
+  return price + 3; // 3% deferral adjustment
 }
 
 export function calculateFinalPrice(

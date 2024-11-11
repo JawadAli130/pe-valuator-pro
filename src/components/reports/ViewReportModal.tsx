@@ -75,29 +75,17 @@ export function ViewReportModal({ report, onClose }: ViewReportModalProps) {
               <h3 className="text-sm font-medium text-gray-500">Date</h3>
               <p className="mt-1 text-sm text-gray-900">{report.date}</p>
             </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-500">Status</h3>
-              <p className="mt-1 text-sm text-gray-900">{report.status}</p>
-            </div>
           </div>
 
           {/* Pricing Details */}
           <div className="bg-gray-50 p-4 rounded-lg">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Pricing Details</h3>
             <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">Market Average</h4>
-                  <p className="mt-1 text-lg font-semibold text-gray-900">
-                    {report.marketAverage.toFixed(1)}%
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">Volatility Score</h4>
-                  <p className="mt-1 text-lg font-semibold text-gray-900">
-                    {report.volatilityScore.toFixed(1)}
-                  </p>
-                </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Market Average</h4>
+                <p className="mt-1 text-lg font-semibold text-gray-900">
+                  {report.marketAverage.toFixed(1)}%
+                </p>
               </div>
               <div className="space-y-4">
                 <div>
