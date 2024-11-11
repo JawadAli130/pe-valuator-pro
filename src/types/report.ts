@@ -23,12 +23,13 @@ export interface Report {
 }
 
 export interface ExportOptions {
-  currentNAV: number;
+  currentNAV: string;
   fundManager: string;
   vintage: string;
   buyers: string;
   includeQualitativeFactors: boolean;
   includeMarketData: boolean;
+  isDesignExport?: boolean;
 }
 
 export const qualitativeFactorOptions = [

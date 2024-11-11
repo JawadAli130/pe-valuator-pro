@@ -39,7 +39,15 @@ export function ReportsTable({ reports, onViewReport, onDeleteReport }: ReportsT
             <tr key={report.id}>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm font-medium text-gray-900">{report.name}</div>
-                <div className="text-sm text-gray-500">{report.date}</div>
+                <div className="text-sm text-gray-500">
+                  {new Date(report.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">{report.assetClass}</div>

@@ -52,7 +52,13 @@ export function DataPointsTable({ dataPoints, onEdit, onDelete }: DataPointsTabl
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500">{point.date}</div>
+                <div className="text-sm text-gray-500">
+                  {new Date(point.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button 

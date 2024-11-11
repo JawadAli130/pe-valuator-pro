@@ -94,7 +94,8 @@ export function DataPointModal({
                 onChange={(e) => onChange('minPrice', Number(e.target.value))}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 min="0"
-                max="100"
+                max="200"
+                step="0.01"
                 required
               />
             </div>
@@ -111,6 +112,7 @@ export function DataPointModal({
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 min="0"
                 max="100"
+                step="0.01"
                 required
               />
             </div>

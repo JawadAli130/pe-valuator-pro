@@ -9,7 +9,7 @@ interface ExportOptionsModalProps {
 
 export function ExportOptionsModal({ onClose, onExport }: ExportOptionsModalProps) {
   const [options, setOptions] = useState<ExportOptions>({
-    currentNAV: 0,
+    currentNAV: '',
     fundManager: '',
     vintage: '',
     buyers: '',
@@ -35,16 +35,15 @@ export function ExportOptionsModal({ onClose, onExport }: ExportOptionsModalProp
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="currentNAV" className="block text-sm font-medium text-gray-700">
-              Current NAV ($M)
+              Current NAV
             </label>
             <input
-              type="number"
+              type="text"
               id="currentNAV"
               value={options.currentNAV}
-              onChange={(e) => setOptions({ ...options, currentNAV: Number(e.target.value) })}
+              onChange={(e) => setOptions({ ...options, currentNAV: e.target.value })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              min="0"
-              step="0.1"
+              placeholder="e.g., $1-$5M"
             />
           </div>
 

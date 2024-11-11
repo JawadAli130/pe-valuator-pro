@@ -31,7 +31,13 @@ export function generateReport(
     name,
     assetClass,
     quarter,
-    date: new Date().toLocaleDateString(),
+    date: new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }),
     status: 'draft',
     qualitativeFactors,
     volatilityScore,

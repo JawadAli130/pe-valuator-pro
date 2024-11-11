@@ -118,7 +118,7 @@ export function AddReportModal({
                     type="number"
                     min="-5"
                     max="5"
-                    step="0.5"
+                    step="0.01"
                     value={factor.score}
                     onChange={(e) => onUpdateQualitativeFactor(index, 'score', parseFloat(e.target.value))}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -147,7 +147,7 @@ export function AddReportModal({
               id="volatilityScore"
               min="0"
               max="5"
-              step="0.5"
+              step="0.01"
               value={newReport.volatilityScore}
               onChange={(e) => onUpdateReport('volatilityScore', parseFloat(e.target.value))}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"

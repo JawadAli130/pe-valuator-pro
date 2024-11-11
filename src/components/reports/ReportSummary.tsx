@@ -62,9 +62,9 @@ export function ReportSummary({ report }: ReportSummaryProps) {
         <div className="grid grid-cols-2 gap-4">
           {report.qualitativeFactors.map((factor, index) => (
             <div key={index} className="flex justify-between items-center bg-gray-50 rounded-lg p-2">
-              <span className="text-sm text-gray-700">{factor.name}</span>
+              <span className="text-sm text-gray-700">{getFactorLabel(factor.name)}</span>
               <span className="text-sm font-medium text-gray-900">
-                {factor.score > 0 ? '+' : ''}{factor.score}
+                {factor.score > 0 ? `+${factor.score.toFixed(1)}` : factor.score.toFixed(1)}
               </span>
             </div>
           ))}

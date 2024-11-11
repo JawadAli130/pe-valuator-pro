@@ -38,7 +38,13 @@ export function ProvidersTable({ providers, onEdit, onDelete }: ProvidersTablePr
                 <div className="text-sm text-gray-500">{provider.dataPoints}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500">{provider.lastUpdated}</div>
+                <div className="text-sm text-gray-500">
+                  {new Date(provider.lastUpdated).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button 
