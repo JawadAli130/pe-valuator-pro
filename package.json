@@ -7,7 +7,9 @@
     "dev:client": "vite",
     "dev:server": "tsx watch src/server/index.ts",
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    "build": "tsc && vite build",
+    "build:server": "tsc -p tsconfig.server.json",
+    "build:client": "vite build",
+    "build": "prisma generate && npm run build:server && npm run build:client",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "node dist/server/index.js"

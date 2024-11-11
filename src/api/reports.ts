@@ -1,5 +1,5 @@
-import { prisma } from '../lib/db';
-import { Report } from '../types/report';
+import { prisma } from '../lib/db.js';
+import { Report } from '../types/report.js';
 
 export async function fetchReportData() {
   const [reportsData, dataPointsData, settingsData] = await Promise.all([

@@ -3,11 +3,18 @@
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "outDir": "dist/server",
+    "outDir": "dist",
     "noEmit": false,
     "esModuleInterop": true,
-    "allowImportingTsExtensions": false
+    "allowImportingTsExtensions": false,
+    "noImplicitAny": false,
+    "strict": true
   },
-  "include": ["src/server/**/*"],
+  "include": [
+    "src/server/**/*",
+    "src/lib/**/*",
+    "src/api/**/*",
+    "src/types/**/*"
+  ],
   "exclude": ["node_modules"]
 }

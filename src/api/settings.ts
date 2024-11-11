@@ -1,4 +1,4 @@
-import { prisma } from '../lib/db';
+import { prisma } from '../lib/db.js';
 
 export async function fetchSettings() {
   const settingsData = await prisma.settings.findMany();

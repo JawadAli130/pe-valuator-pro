@@ -1,5 +1,5 @@
-import { prisma } from '../lib/db';
-import { Provider } from '../types/provider';
+import { prisma } from '../lib/db.js';
+import { Provider } from '../types/provider.js';
 
 export async function fetchProviders() {
   return prisma.provider.findMany({

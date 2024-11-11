@@ -1,4 +1,4 @@
-import { prisma } from '../lib/db';
+import { prisma } from '../lib/db.js';
 
 export async function fetchDashboardStats() {
   const [reports, providers] = await Promise.all([

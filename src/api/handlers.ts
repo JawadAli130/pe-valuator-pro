@@ -1,5 +1,5 @@
-import { Report } from '../types/report';
-import { createReport, fetchReportData } from './reports';
+import { Report } from '../types/report.js';
+import { createReport, fetchReportData } from './reports.js';
 
 export async function handleFetchReports(req: Request): Promise<Response> {
   try {

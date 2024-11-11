@@ -1,5 +1,5 @@
-import { prisma } from '../lib/db';
-import { DataPoint } from '../types/dataPoint';
+import { prisma } from '../lib/db.js';
+import { DataPoint } from '../types/dataPoint.js';
 
 export async function createDataPoint(dataPoint: Omit<DataPoint, 'id' | 'date'>) {
   return prisma.dataPoint.create({

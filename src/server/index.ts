@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { prisma } from '../lib/db';
-import { fetchProviders, createProvider, updateProvider, deleteProvider } from '../api/providers';
-import { fetchDashboardStats } from '../api/dashboard';
-import { fetchSettings, updateSettings } from '../api/settings';
+import { prisma } from '../lib/db.js';
+import { fetchProviders, createProvider, updateProvider, deleteProvider } from '../api/providers.js';
+import { fetchDashboardStats } from '../api/dashboard.js';
+import { fetchSettings, updateSettings } from '../api/settings.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
