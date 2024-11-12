@@ -41,48 +41,64 @@ export function Settings() {
     loadSettings();
   }, []);
 
-  const loadSettings = async () => {
+   const loadSettings = async () => {
     try {
-      const response = await fetch('/api/settings');
+      const response = await fetch('/pricing_tool/api/settings');
       if (!response.ok) {
         throw new Error('Failed to fetch settings');
       }
       const data = await response.json();
-      setSettings(data);
+      
+      // If no settings exist, use default settings
+      if (!data.assetClasses || Object.keys(data.assetClasses).length === 0) {
+        setSettings({
+          assetClasses: {
+            buyout: defaultAssetClassSettings
+          }
+        });
+      } else {
+        setSettings(data);
+      }
     } catch (error) {
       console.error('Failed to load settings:', error);
       setError(error instanceof Error ? error.message : 'Failed to load settings');
+      // Set default settings on error
+      setSettings({
+        assetClasses: {
+          buyout: defaultAssetClassSettings
+        }
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const errors = validateSettings(settings.assetClasses[currentAssetClass]);
-    
-    if (errors.length > 0) {
-      alert(errors.join('\n'));
-      return;
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  const errors = validateSettings(settings.assetClasses[currentAssetClass]);
+  
+  if (errors.length > 0) {
+    alert(errors.join('\n'));
+    return;
+  }
+
+  try {
+    const response = await fetch(`/pricing_tool/api/settings/${currentAssetClass}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settings.assetClasses[currentAssetClass])
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to save settings');
     }
 
-    try {
-      const response = await fetch(`/api/settings/${currentAssetClass}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings.assetClasses[currentAssetClass])
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save settings');
-      }
-
-      alert('Settings saved successfully');
-    } catch (error) {
-      console.error('Failed to save settings:', error);
-      alert('Failed to save settings');
-    }
-  };
+    alert('Settings saved successfully');
+  } catch (error) {
+    console.error('Failed to save settings:', error);
+    alert('Failed to save settings');
+  }
+};
 
   if (loading) {
     return <div>Loading...</div>;

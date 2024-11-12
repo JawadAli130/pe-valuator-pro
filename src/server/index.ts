@@ -1,9 +1,14 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { prisma } from '../lib/db.js';
 import { fetchProviders, createProvider, updateProvider, deleteProvider } from '../api/providers.js';
 import { fetchDashboardStats } from '../api/dashboard.js';
 import { fetchSettings, updateSettings } from '../api/settings.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,7 +16,10 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Providers endpoints
+// Serve static files
+app.use('/pricing_tool', express.static(path.join(__dirname, '../../dist')));
+
+// API Routes
 app.get('/api/providers', async (req, res) => {
   try {
     const providers = await fetchProviders();
@@ -271,6 +279,11 @@ app.put('/api/settings/:assetClass', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Failed to update settings' });
   }
+});
+
+// Handle React routing
+app.get('/pricing_tool/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });
 
 app.listen(port, () => {

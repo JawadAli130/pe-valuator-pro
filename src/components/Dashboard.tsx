@@ -30,7 +30,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   useEffect(() => {
     async function loadDashboardStats() {
       try {
-        const response = await fetch('/api/dashboard');
+        const response = await fetch('/pricing_tool/api/dashboard');
         if (!response.ok) {
           throw new Error('Failed to fetch dashboard data');
         }
