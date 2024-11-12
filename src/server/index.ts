@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { prisma } from '../lib/db.js';
-import { fetchProviders, createProvider, updateProvider, deleteProvider } from '../api/providers.js';
+import { createProvider, updateProvider, deleteProvider } from '../api/providers.js';
 import { fetchDashboardStats } from '../api/dashboard.js';
 import { fetchSettings, updateSettings } from '../api/settings.js';
 
@@ -17,10 +17,10 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files
-app.use('/pricing_tool', express.static(path.join(__dirname, '../../dist')));
+app.use('/pricing_tool', express.static(path.join(__dirname, '../public')));
 
 // API Routes
-app.get('/api/providers', async (req: Request, res: Response) => {
+app.get('/pricing_tool/api/providers', async (_req: Request, res: Response) => {
   try {
     const providers = await prisma.provider.findMany({
       include: {
@@ -48,7 +48,7 @@ app.get('/api/providers', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/providers', async (req: Request, res: Response) => {
+app.post('/pricing_tool/api/providers', async (req: Request, res: Response) => {
   try {
     const provider = await createProvider(req.body);
     const formattedProvider = {
@@ -65,7 +65,7 @@ app.post('/api/providers', async (req: Request, res: Response) => {
   }
 });
 
-app.put('/api/providers/:id', async (req: Request, res: Response) => {
+app.put('/pricing_tool/api/providers/:id', async (req: Request, res: Response) => {
   try {
     const provider = await updateProvider(Number(req.params.id), req.body);
     res.json(provider);
@@ -75,7 +75,7 @@ app.put('/api/providers/:id', async (req: Request, res: Response) => {
   }
 });
 
-app.delete('/api/providers/:id', async (req: Request, res: Response) => {
+app.delete('/pricing_tool/api/providers/:id', async (req: Request, res: Response) => {
   try {
     await deleteProvider(Number(req.params.id));
     res.status(204).send();
@@ -86,7 +86,7 @@ app.delete('/api/providers/:id', async (req: Request, res: Response) => {
 });
 
 // Dashboard endpoints
-app.get('/api/dashboard', async (req: Request, res: Response) => {
+app.get('/pricing_tool/api/dashboard', async (_req: Request, res: Response) => {
   try {
     const stats = await fetchDashboardStats();
     res.json(stats);
@@ -97,7 +97,7 @@ app.get('/api/dashboard', async (req: Request, res: Response) => {
 });
 
 // Data points endpoints
-app.get('/api/dataPoints', async (req: Request, res: Response) => {
+app.get('/pricing_tool/api/dataPoints', async (_req: Request, res: Response) => {
   try {
     const dataPoints = await prisma.dataPoint.findMany({
       include: {
@@ -114,7 +114,7 @@ app.get('/api/dataPoints', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/dataPoints', async (req: Request, res: Response) => {
+app.post('/pricing_tool/api/dataPoints', async (req: Request, res: Response) => {
   try {
     const { provider, assetClass, quarter, minPrice, maxPrice } = req.body;
     
@@ -139,7 +139,7 @@ app.post('/api/dataPoints', async (req: Request, res: Response) => {
   }
 });
 
-app.put('/api/dataPoints/:id', async (req: Request, res: Response) => {
+app.put('/pricing_tool/api/dataPoints/:id', async (req: Request, res: Response) => {
   try {
     const dataPoint = await prisma.dataPoint.update({
       where: { id: parseInt(req.params.id) },
@@ -160,7 +160,7 @@ app.put('/api/dataPoints/:id', async (req: Request, res: Response) => {
   }
 });
 
-app.delete('/api/dataPoints/:id', async (req: Request, res: Response) => {
+app.delete('/pricing_tool/api/dataPoints/:id', async (req: Request, res: Response) => {
   try {
     const dataPointId = parseInt(req.params.id);
     if (isNaN(dataPointId)) {
@@ -179,7 +179,7 @@ app.delete('/api/dataPoints/:id', async (req: Request, res: Response) => {
 });
 
 // Reports endpoints
-app.get('/api/reports', async (req: Request, res: Response) => {
+app.get('/pricing_tool/api/reports', async (_req: Request, res: Response) => {
   try {
     const [reports, dataPoints, settings] = await Promise.all([
       prisma.report.findMany({
@@ -214,7 +214,7 @@ app.get('/api/reports', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/reports', async (req: Request, res: Response) => {
+app.post('/pricing_tool/api/reports', async (req: Request, res: Response) => {
   try {
     const report = await prisma.report.create({
       data: {
@@ -246,7 +246,7 @@ app.post('/api/reports', async (req: Request, res: Response) => {
   }
 });
 
-app.delete('/api/reports/:id', async (req: Request, res: Response) => {
+app.delete('/pricing_tool/api/reports/:id', async (req: Request, res: Response) => {
   try {
     const reportId = parseInt(req.params.id);
     console.log('Attempting to delete report:', reportId);
@@ -276,7 +276,7 @@ app.delete('/api/reports/:id', async (req: Request, res: Response) => {
 });
 
 // Settings endpoints
-app.get('/api/settings', async (req: Request, res: Response) => {
+app.get('/pricing_tool/api/settings', async (_req: Request, res: Response) => {
   try {
     const settings = await fetchSettings();
     res.json(settings);
@@ -286,7 +286,7 @@ app.get('/api/settings', async (req: Request, res: Response) => {
   }
 });
 
-app.put('/api/settings/:assetClass', async (req: Request, res: Response) => {
+app.put('/pricing_tool/api/settings/:assetClass', async (req: Request, res: Response) => {
   try {
     const { assetClass } = req.params;
     const settings = req.body;
@@ -297,7 +297,7 @@ app.put('/api/settings/:assetClass', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/settings/create', async (req: Request, res: Response) => {
+app.post('/pricing_tool/api/settings/create', async (req: Request, res: Response) => {
   try {
     const { assetClass, sMax, aNegative, aPositive, m, adjustmentPerUnit, weights } = req.body;
     
@@ -324,9 +324,28 @@ app.post('/api/settings/create', async (req: Request, res: Response) => {
   }
 });
 
+app.delete('/pricing_tool/api/settings/:assetClass', async (req: Request, res: Response) => {
+  try {
+    const { assetClass } = req.params;
+    
+    if (assetClass === 'buyout') {
+      return res.status(400).json({ error: 'Cannot delete default asset class' });
+    }
+
+    await prisma.settings.delete({
+      where: { assetClass }
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    console.error('Failed to delete settings:', error);
+    res.status(500).json({ error: 'Failed to delete settings' });
+  }
+});
+
 // Handle React routing
-app.get('/pricing_tool/*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../../dist/index.html'));
+app.get('/pricing_tool/*', (_req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 app.listen(port, () => {

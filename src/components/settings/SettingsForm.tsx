@@ -1,4 +1,3 @@
-import React from 'react';
 import { AssetClassSettings } from '../../types/settings';
 
 interface SettingsFormProps {

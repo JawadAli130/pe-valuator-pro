@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface ReportFilters {
   assetClass?: string;
   quarter?: string;

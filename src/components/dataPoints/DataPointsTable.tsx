@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import { DataPoint } from '../../types/dataPoint';
 
@@ -38,7 +37,7 @@ export function DataPointsTable({ dataPoints, onEdit, onDelete }: DataPointsTabl
           {dataPoints.map((point) => (
             <tr key={point.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">{point.provider.name}</div>
+                <div className="text-sm text-gray-900">{point.provider}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">{point.assetClass}</div>

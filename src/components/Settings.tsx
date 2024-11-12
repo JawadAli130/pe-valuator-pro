@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Plus } from 'lucide-react';
+import { Save, Plus, Trash2 } from 'lucide-react';
 import { SettingsForm } from './settings/SettingsForm.js';
 import { WeightsForm } from './settings/WeightsForm.js';
 import { AssetClassSettings, validateSettings } from '../types/settings.js';
@@ -120,6 +120,38 @@ export function Settings() {
     }
   };
 
+  const handleDeleteAssetClass = async () => {
+    // Don't allow deletion of the default buyout class
+    if (currentAssetClass === 'buyout') {
+      alert('Cannot delete the default asset class');
+      return;
+    }
+
+    if (window.confirm(`Are you sure you want to delete the ${currentAssetClass} asset class? This action cannot be undone.`)) {
+      try {
+        await fetchApi(`/settings/${currentAssetClass}`, {
+          method: 'DELETE'
+        });
+
+        // Update local state after successful deletion
+        setSettings(prev => {
+          const newAssetClasses = { ...prev.assetClasses };
+          delete newAssetClasses[currentAssetClass];
+          return {
+            ...prev,
+            assetClasses: newAssetClasses
+          };
+        });
+
+        // Switch to buyout after deletion
+        setCurrentAssetClass('buyout');
+      } catch (error) {
+        console.error('Failed to delete asset class:', error);
+        alert('Failed to delete asset class');
+      }
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -203,7 +235,20 @@ export function Settings() {
             />
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-between">
+            <button
+              type="button"
+              onClick={handleDeleteAssetClass}
+              className={`flex items-center gap-2 px-4 py-2 text-white rounded-lg ${
+                currentAssetClass === 'buyout'
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-red-600 hover:bg-red-700'
+              }`}
+              disabled={currentAssetClass === 'buyout'}
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete Asset Class
+            </button>
             <button
               type="submit"
               className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"

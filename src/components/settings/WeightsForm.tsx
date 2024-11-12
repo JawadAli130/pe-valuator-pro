@@ -1,4 +1,3 @@
-import React from 'react';
 import { qualitativeFactorOptions } from '../../types/report';
 
 interface WeightsFormProps {

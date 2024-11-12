@@ -8,8 +8,8 @@ import { fetchApi } from '../utils/api.js';
 
 export function DataPoints() {
   const [dataPoints, setDataPoints] = useState<DataPoint[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
   const [currentDataPoint, setCurrentDataPoint] = useState<Partial<DataPoint>>({
@@ -143,7 +143,7 @@ export function DataPoints() {
     setIsModalOpen(true);
   };
 
-  const handleChange = (field: keyof DataPoint, value: string | number) => {
+  const handleChange = (field: string, value: string | number) => {
     setCurrentDataPoint({ ...currentDataPoint, [field]: value });
   };
 
@@ -151,10 +151,14 @@ export function DataPoints() {
 
   return (
     <div className="space-y-6">
+      {loading && <div>Loading...</div>}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Data Points</h1>
           <p className="mt-2 text-gray-600">Manage pricing data points</p>
+          {error && (
+            <p className="text-red-600 mt-2">{error}</p>
+          )}
         </div>
         <button
           onClick={handleAdd}
@@ -228,7 +232,7 @@ export function DataPoints() {
         onClose={() => setIsModalOpen(false)}
         dataPoint={currentDataPoint}
         onSubmit={handleSubmit}
-        onChange={(name, value) => setCurrentDataPoint({ ...currentDataPoint, [name]: value })}
+        onChange={handleChange}
         mode={modalMode}
         providers={providers}
         assetClasses={assetClasses}

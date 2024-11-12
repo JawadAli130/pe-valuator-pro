@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Report } from '../types/report';
 import { ViewReportModal } from './reports/ViewReportModal';
@@ -14,29 +14,6 @@ interface ReportFilters {
   assetClass?: string;
   quarter?: string;
   status?: 'draft' | 'final';
-}
-
-interface PricingSettings {
-  assetClasses: {
-    [key: string]: {
-      sMax: number;
-      aNegative: number;
-      aPositive: number;
-      m: number;
-      adjustmentPerUnit: number;
-      weights: {
-        gpQuartile: number;
-        [key: string]: number;
-      };
-    };
-  };
-}
-
-interface ReportsTableProps {
-  reports: Report[];
-  onViewReport: (report: Report) => void;
-  onExportPDF: (report: Report) => void;
-  onDeleteReport: (reportId: number) => void;
 }
 
 export function Reports() {
@@ -67,7 +44,7 @@ export function Reports() {
 
   const handleExportPDF = (report: Report) => {
     exportReportToPDF(report, {
-      currentNAV: 0,
+      currentNAV: '0',
       fundManager: '',
       vintage: '',
       buyers: '',
@@ -115,7 +92,7 @@ export function Reports() {
         newReport.qualitativeFactors,
         newReport.volatilityScore,
         dataPoints,
-        assetClassSettings
+        { assetClasses: { [newReport.assetClass.toLowerCase()]: assetClassSettings } }
       );
 
       await addReport(report);
@@ -209,7 +186,6 @@ export function Reports() {
   const filteredReports = reports.filter(report => {
     if (filters.assetClass && report.assetClass !== filters.assetClass) return false;
     if (filters.quarter && report.quarter !== filters.quarter) return false;
-    if (filters.status && report.status !== filters.status) return false;
     return true;
   });
 

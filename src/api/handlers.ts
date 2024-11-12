@@ -1,7 +1,7 @@
 import { Report } from '../types/report.js';
 import { createReport, fetchReportData } from './reports.js';
 
-export async function handleFetchReports(req: Request): Promise<Response> {
+export async function handleFetchReports(): Promise<Response> {
   try {
     const data = await fetchReportData();
     return new Response(JSON.stringify(data), {

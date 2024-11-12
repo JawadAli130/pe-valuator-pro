@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FileText, Plus, Settings, TrendingUp, Users } from 'lucide-react';
+import { FileText, Settings, TrendingUp, Users } from 'lucide-react';
 import { fetchApi } from '../utils/api.js';
 
 interface DashboardProps {

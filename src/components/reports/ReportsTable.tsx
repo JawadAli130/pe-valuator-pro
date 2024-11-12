@@ -1,4 +1,3 @@
-import React from 'react';
 import { Eye, Trash2 } from 'lucide-react';
 import { Report } from '../../types/report';
 

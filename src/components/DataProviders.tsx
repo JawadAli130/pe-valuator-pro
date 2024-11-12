@@ -87,51 +87,58 @@ export function DataProviders() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Data Providers</h1>
-          <p className="mt-2 text-gray-600">Manage your data provider sources</p>
-        </div>
-        <button
-          onClick={handleAdd}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-        >
-          <Plus className="w-4 h-4" />
-          Add Provider
-        </button>
-      </div>
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <>
+          {error && <div className="text-red-600">{error}</div>}
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">Data Providers</h1>
+              <p className="mt-2 text-gray-600">Manage your data provider sources</p>
+            </div>
+            <button
+              onClick={handleAdd}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            >
+              <Plus className="w-4 h-4" />
+              Add Provider
+            </button>
+          </div>
 
-      {/* Search Filter */}
-      <div className="max-w-md">
-        <label htmlFor="search" className="block text-sm font-medium text-gray-700">
-          Search Providers
-        </label>
-        <div className="mt-1">
-          <input
-            type="text"
-            id="search"
-            value={filters.searchTerm}
-            onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}
-            placeholder="Search by provider name..."
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          {/* Search Filter */}
+          <div className="max-w-md">
+            <label htmlFor="search" className="block text-sm font-medium text-gray-700">
+              Search Providers
+            </label>
+            <div className="mt-1">
+              <input
+                type="text"
+                id="search"
+                value={filters.searchTerm}
+                onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}
+                placeholder="Search by provider name..."
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          <ProvidersTable
+            providers={filteredProviders}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
-        </div>
-      </div>
 
-      <ProvidersTable
-        providers={filteredProviders}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
-
-      <ProviderModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        provider={currentProvider}
-        onSubmit={handleSubmit}
-        onChange={(name, value) => setCurrentProvider({ ...currentProvider, [name]: value })}
-        mode={modalMode}
-      />
+          <ProviderModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            provider={currentProvider}
+            onSubmit={handleSubmit}
+            onChange={(name, value) => setCurrentProvider({ ...currentProvider, [name]: value })}
+            mode={modalMode}
+          />
+        </>
+      )}
     </div>
   );
 }

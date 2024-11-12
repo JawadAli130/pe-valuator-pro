@@ -1,6 +1,9 @@
-import React from 'react';
 import { Report } from '../../types/report';
 import { BarChart3, TrendingUp, FileText } from 'lucide-react';
+
+function getFactorLabel(name: string): string {
+  return name.replace(/([A-Z])/g, ' $1').trim();
+}
 
 interface ReportSummaryProps {
   report: Report;
