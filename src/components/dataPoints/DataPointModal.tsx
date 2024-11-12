@@ -81,7 +81,7 @@ export function DataPointModal({
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             >
               <option value="Q1 2024">Q1 2024</option>
-              <option value="Q2 2024">Q2 2024</option>
+              <option value="Q2 2024">Q23 2024</option>
               <option value="Q3 2024">Q3 2024</option>
               <option value="Q4 2024">Q4 2024</option>
             </select>
