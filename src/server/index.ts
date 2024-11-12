@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -20,27 +20,52 @@ app.use(express.json());
 app.use('/pricing_tool', express.static(path.join(__dirname, '../../dist')));
 
 // API Routes
-app.get('/api/providers', async (req, res) => {
+app.get('/api/providers', async (req: Request, res: Response) => {
   try {
-    const providers = await fetchProviders();
-    res.json(providers);
+    const providers = await prisma.provider.findMany({
+      include: {
+        _count: {
+          select: { dataPoints: true }
+        }
+      },
+      orderBy: {
+        updatedAt: 'desc'
+      }
+    });
+
+    const formattedProviders = providers.map(provider => ({
+      id: provider.id,
+      name: provider.name,
+      dataPoints: provider._count.dataPoints,
+      createdAt: provider.createdAt.toISOString(),
+      updatedAt: provider.updatedAt.toISOString()
+    }));
+
+    res.json(formattedProviders);
   } catch (error) {
     console.error('Failed to fetch providers:', error);
     res.status(500).json({ error: 'Failed to fetch providers' });
   }
 });
 
-app.post('/api/providers', async (req, res) => {
+app.post('/api/providers', async (req: Request, res: Response) => {
   try {
     const provider = await createProvider(req.body);
-    res.status(201).json(provider);
+    const formattedProvider = {
+      id: provider.id,
+      name: provider.name,
+      dataPoints: provider._count.dataPoints,
+      createdAt: provider.createdAt.toISOString(),
+      updatedAt: provider.updatedAt.toISOString()
+    };
+    res.status(201).json(formattedProvider);
   } catch (error) {
     console.error('Failed to create provider:', error);
     res.status(500).json({ error: 'Failed to create provider' });
   }
 });
 
-app.put('/api/providers/:id', async (req, res) => {
+app.put('/api/providers/:id', async (req: Request, res: Response) => {
   try {
     const provider = await updateProvider(Number(req.params.id), req.body);
     res.json(provider);
@@ -50,7 +75,7 @@ app.put('/api/providers/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/providers/:id', async (req, res) => {
+app.delete('/api/providers/:id', async (req: Request, res: Response) => {
   try {
     await deleteProvider(Number(req.params.id));
     res.status(204).send();
@@ -61,7 +86,7 @@ app.delete('/api/providers/:id', async (req, res) => {
 });
 
 // Dashboard endpoints
-app.get('/api/dashboard', async (req, res) => {
+app.get('/api/dashboard', async (req: Request, res: Response) => {
   try {
     const stats = await fetchDashboardStats();
     res.json(stats);
@@ -72,7 +97,7 @@ app.get('/api/dashboard', async (req, res) => {
 });
 
 // Data points endpoints
-app.get('/api/dataPoints', async (req, res) => {
+app.get('/api/dataPoints', async (req: Request, res: Response) => {
   try {
     const dataPoints = await prisma.dataPoint.findMany({
       include: {
@@ -89,7 +114,7 @@ app.get('/api/dataPoints', async (req, res) => {
   }
 });
 
-app.post('/api/dataPoints', async (req, res) => {
+app.post('/api/dataPoints', async (req: Request, res: Response) => {
   try {
     const { provider, assetClass, quarter, minPrice, maxPrice } = req.body;
     
@@ -114,7 +139,7 @@ app.post('/api/dataPoints', async (req, res) => {
   }
 });
 
-app.put('/api/dataPoints/:id', async (req, res) => {
+app.put('/api/dataPoints/:id', async (req: Request, res: Response) => {
   try {
     const dataPoint = await prisma.dataPoint.update({
       where: { id: parseInt(req.params.id) },
@@ -135,20 +160,17 @@ app.put('/api/dataPoints/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/dataPoints/:id', async (req, res) => {
+app.delete('/api/dataPoints/:id', async (req: Request, res: Response) => {
   try {
     const dataPointId = parseInt(req.params.id);
-    
     if (isNaN(dataPointId)) {
       return res.status(400).json({ error: 'Invalid data point ID' });
     }
-    
     await prisma.dataPoint.delete({
       where: {
         id: dataPointId
       }
     });
-    
     res.status(204).end();
   } catch (error) {
     console.error('Failed to delete data point:', error);
@@ -157,7 +179,7 @@ app.delete('/api/dataPoints/:id', async (req, res) => {
 });
 
 // Reports endpoints
-app.get('/api/reports', async (req, res) => {
+app.get('/api/reports', async (req: Request, res: Response) => {
   try {
     const [reports, dataPoints, settings] = await Promise.all([
       prisma.report.findMany({
@@ -192,7 +214,7 @@ app.get('/api/reports', async (req, res) => {
   }
 });
 
-app.post('/api/reports', async (req, res) => {
+app.post('/api/reports', async (req: Request, res: Response) => {
   try {
     const report = await prisma.report.create({
       data: {
@@ -224,35 +246,29 @@ app.post('/api/reports', async (req, res) => {
   }
 });
 
-app.delete('/api/reports/:id', async (req, res) => {
+app.delete('/api/reports/:id', async (req: Request, res: Response) => {
   try {
     const reportId = parseInt(req.params.id);
     console.log('Attempting to delete report:', reportId);
-    
     if (isNaN(reportId)) {
       console.log('Invalid report ID received:', req.params.id);
       return res.status(400).json({ error: 'Invalid report ID' });
     }
-    
-    // First delete all associated qualitative factors
     await prisma.qualitativeFactor.deleteMany({
       where: {
         reportId: reportId
       }
     });
-    
-    // Then delete the report
     const report = await prisma.report.delete({
       where: {
         id: reportId
       }
     });
-    
     console.log('Successfully deleted report:', report);
     res.status(204).end();
   } catch (error) {
-    console.error('Failed to delete report:', error);
-    if (error.code === 'P2025') {
+    console.error('Failed to delete report:', error as any);
+    if ((error as any).code === 'P2025') {
       return res.status(404).json({ error: 'Report not found' });
     }
     res.status(500).json({ error: 'Failed to delete report' });
@@ -260,7 +276,7 @@ app.delete('/api/reports/:id', async (req, res) => {
 });
 
 // Settings endpoints
-app.get('/api/settings', async (req, res) => {
+app.get('/api/settings', async (req: Request, res: Response) => {
   try {
     const settings = await fetchSettings();
     res.json(settings);
@@ -270,7 +286,7 @@ app.get('/api/settings', async (req, res) => {
   }
 });
 
-app.put('/api/settings/:assetClass', async (req, res) => {
+app.put('/api/settings/:assetClass', async (req: Request, res: Response) => {
   try {
     const { assetClass } = req.params;
     const settings = req.body;
@@ -281,8 +297,35 @@ app.put('/api/settings/:assetClass', async (req, res) => {
   }
 });
 
+app.post('/api/settings/create', async (req: Request, res: Response) => {
+  try {
+    const { assetClass, sMax, aNegative, aPositive, m, adjustmentPerUnit, weights } = req.body;
+    
+    if (!assetClass) {
+      return res.status(400).json({ error: 'Asset class name is required' });
+    }
+
+    const newSettings = await prisma.settings.create({
+      data: {
+        assetClass,
+        sMax,
+        aNegative,
+        aPositive,
+        m,
+        adjustmentPerUnit,
+        weights
+      }
+    });
+
+    res.status(201).json(newSettings);
+  } catch (error) {
+    console.error('Failed to create settings:', error);
+    res.status(500).json({ error: 'Failed to create settings' });
+  }
+});
+
 // Handle React routing
-app.get('/pricing_tool/*', (req, res) => {
+app.get('/pricing_tool/*', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });
 

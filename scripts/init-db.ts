@@ -1,5 +1,5 @@
-import { prisma } from '../src/lib/db';
-import { defaultAssetClassSettings } from '../src/constants/defaultSettings';
+import { prisma } from '../src/lib/db.js';
+import { defaultAssetClassSettings } from '../src/constants/defaultSettings.js';
 
 async function main() {
   // Initialize settings for each asset class

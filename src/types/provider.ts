@@ -2,7 +2,8 @@ export interface Provider {
   id: number;
   name: string;
   dataPoints: number;
-  lastUpdated: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ProviderFilters {

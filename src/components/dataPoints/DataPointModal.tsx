@@ -1,5 +1,6 @@
 import React from 'react';
-import { DataPoint } from '../../types/dataPoint';
+import { DataPoint } from '../../types/dataPoint.js';
+import { Provider } from '../../types/provider.js';
 
 interface DataPointModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface DataPointModalProps {
   onChange: (field: string, value: any) => void;
   mode: 'add' | 'edit';
   providers: Provider[];
+  assetClasses: string[];
 }
 
 export function DataPointModal({
@@ -18,7 +20,8 @@ export function DataPointModal({
   onSubmit,
   onChange,
   mode,
-  providers
+  providers,
+  assetClasses
 }: DataPointModalProps) {
   if (!isOpen) return null;
 
@@ -59,9 +62,11 @@ export function DataPointModal({
               onChange={(e) => onChange('assetClass', e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             >
-              <option value="Buyout">Buyout</option>
-              <option value="Growth">Growth</option>
-              <option value="Venture">Venture</option>
+              {assetClasses.map((assetClass) => (
+                <option key={assetClass} value={assetClass}>
+                  {assetClass.charAt(0).toUpperCase() + assetClass.slice(1)}
+                </option>
+              ))}
             </select>
           </div>
 

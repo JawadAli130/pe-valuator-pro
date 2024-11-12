@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
-import { DataPointsTable } from './dataPoints/DataPointsTable';
-import { DataPointModal } from './dataPoints/DataPointModal';
-import { DataPoint, DataPointFilters, filterDataPoints, validateDataPoint } from '../types/dataPoint';
+import { DataPointsTable } from './dataPoints/DataPointsTable.js';
+import { DataPointModal } from './dataPoints/DataPointModal.js';
+import { DataPoint, DataPointFilters, filterDataPoints, validateDataPoint } from '../types/dataPoint.js';
+import { Provider } from '../types/provider.js';
 
 export function DataPoints() {
   const [dataPoints, setDataPoints] = useState<DataPoint[]>([]);
@@ -19,11 +20,13 @@ export function DataPoints() {
   });
   const [filters, setFilters] = useState<DataPointFilters>({});
   const [providers, setProviders] = useState<Provider[]>([]);
+  const [assetClasses, setAssetClasses] = useState<string[]>([]);
 
   useEffect(() => {
     Promise.all([
       loadDataPoints(),
-      loadProviders()
+      loadProviders(),
+      loadAssetClasses()
     ]);
   }, []);
 
@@ -54,6 +57,19 @@ export function DataPoints() {
     } catch (error) {
       console.error('Failed to load providers:', error);
       setError(error instanceof Error ? error.message : 'Failed to load providers');
+    }
+  };
+
+  const loadAssetClasses = async () => {
+    try {
+      const response = await fetch('/api/settings');
+      if (!response.ok) {
+        throw new Error('Failed to fetch asset classes');
+      }
+      const data = await response.json();
+      setAssetClasses(Object.keys(data.assetClasses));
+    } catch (error) {
+      console.error('Failed to load asset classes:', error);
     }
   };
 
@@ -245,6 +261,7 @@ export function DataPoints() {
         onChange={(name, value) => setCurrentDataPoint({ ...currentDataPoint, [name]: value })}
         mode={modalMode}
         providers={providers}
+        assetClasses={assetClasses}
       />
     </div>
   );

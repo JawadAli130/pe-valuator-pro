@@ -1,30 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
-  base: '/pricing_tool/',
-  define: {
-    'process.env.NODE_ENV': '"production"'
-  },
-  optimizeDeps: {
-    include: ['lucide-react'],
-  },
-  resolve: {
-    dedupe: ['react', 'react-dom'],
-  },
-  build: {
-    commonjsOptions: {
-      include: [/lucide-react/, /node_modules/],
-    },
-    chunkSizeWarningLimit: 1000
-  },
+  base: mode === 'production' ? '/pricing_tool/' : '/',
   server: {
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
-        changeOrigin: true
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api')
       }
     }
   }
-});
+}));

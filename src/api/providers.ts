@@ -2,18 +2,33 @@ import { prisma } from '../lib/db.js';
 import { Provider } from '../types/provider.js';
 
 export async function fetchProviders() {
-  return prisma.provider.findMany({
+  const providers = await prisma.provider.findMany({
+    include: {
+      _count: {
+        select: { dataPoints: true }
+      }
+    },
+    orderBy: {
+      updatedAt: 'desc'
+    }
+  });
+
+  return providers.map(provider => ({
+    id: provider.id,
+    name: provider.name,
+    dataPoints: provider._count.dataPoints,
+    updatedAt: provider.updatedAt
+  }));
+}
+
+export async function createProvider(provider: Pick<Provider, 'name'>) {
+  return prisma.provider.create({
+    data: provider,
     include: {
       _count: {
         select: { dataPoints: true }
       }
     }
-  });
-}
-
-export async function createProvider(provider: Pick<Provider, 'name'>) {
-  return prisma.provider.create({
-    data: provider
   });
 }
 

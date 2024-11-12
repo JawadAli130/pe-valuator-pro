@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FileText, Plus, Settings, TrendingUp, Users } from 'lucide-react';
+import { fetchApi } from '../utils/api.js';
 
 interface DashboardProps {
   onNavigate: (view: string) => void;
@@ -28,13 +29,9 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadDashboardStats() {
+    const loadDashboardStats = async () => {
       try {
-        const response = await fetch('/pricing_tool/api/dashboard');
-        if (!response.ok) {
-          throw new Error('Failed to fetch dashboard data');
-        }
-        const data = await response.json();
+        const data = await fetchApi('/dashboard');
         setStats(data);
       } catch (error) {
         console.error('Failed to load dashboard stats:', error);
@@ -42,7 +39,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     loadDashboardStats();
   }, []);

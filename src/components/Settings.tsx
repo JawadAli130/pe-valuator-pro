@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Plus } from 'lucide-react';
-import { SettingsForm } from './settings/SettingsForm';
-import { WeightsForm } from './settings/WeightsForm';
-import { AssetClassSettings, validateSettings } from '../types/settings';
-import { AddAssetClassModal } from './settings/AddAssetClassModal';
+import { SettingsForm } from './settings/SettingsForm.js';
+import { WeightsForm } from './settings/WeightsForm.js';
+import { AssetClassSettings, validateSettings } from '../types/settings.js';
+import { AddAssetClassModal } from './settings/AddAssetClassModal.js';
+import { fetchApi } from '../utils/api.js';
 
 const defaultAssetClassSettings: AssetClassSettings = {
   sMax: 5.0,
@@ -43,22 +44,17 @@ export function Settings() {
 
    const loadSettings = async () => {
     try {
-      const response = await fetch('/pricing_tool/api/settings');
-      if (!response.ok) {
-        throw new Error('Failed to fetch settings');
-      }
-      const data = await response.json();
+      const data = await fetchApi('/settings');
       
-      // If no settings exist, use default settings
-      if (!data.assetClasses || Object.keys(data.assetClasses).length === 0) {
-        setSettings({
-          assetClasses: {
+      // Always ensure at least default settings exist
+      setSettings({
+        assetClasses: {
+          ...{
             buyout: defaultAssetClassSettings
-          }
-        });
-      } else {
-        setSettings(data);
-      }
+          },
+          ...(data.assetClasses || {})
+        }
+      });
     } catch (error) {
       console.error('Failed to load settings:', error);
       setError(error instanceof Error ? error.message : 'Failed to load settings');
@@ -83,22 +79,46 @@ export function Settings() {
   }
 
   try {
-    const response = await fetch(`/pricing_tool/api/settings/${currentAssetClass}`, {
+    await fetchApi(`/settings/${currentAssetClass}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(settings.assetClasses[currentAssetClass])
     });
-
-    if (!response.ok) {
-      throw new Error('Failed to save settings');
-    }
-
     alert('Settings saved successfully');
   } catch (error) {
     console.error('Failed to save settings:', error);
     alert('Failed to save settings');
   }
 };
+
+  const handleAddAssetClass = async (name: string) => {
+    try {
+      const newAssetClassData = {
+        assetClass: name.toLowerCase(),
+        ...defaultAssetClassSettings,
+        weights: defaultAssetClassSettings.weights
+      };
+
+      await fetchApi('/settings/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newAssetClassData)
+      });
+
+      // Update local state after successful creation
+      setSettings(prev => ({
+        ...prev,
+        assetClasses: {
+          ...prev.assetClasses,
+          [name.toLowerCase()]: { ...defaultAssetClassSettings }
+        }
+      }));
+      setIsAddModalOpen(false);
+    } catch (error) {
+      console.error('Failed to create asset class:', error);
+      alert('Failed to create asset class');
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -198,16 +218,7 @@ export function Settings() {
       <AddAssetClassModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onAdd={(name) => {
-          setSettings(prev => ({
-            ...prev,
-            assetClasses: {
-              ...prev.assetClasses,
-              [name.toLowerCase()]: { ...defaultAssetClassSettings }
-            }
-          }));
-          setIsAddModalOpen(false);
-        }}
+        onAdd={handleAddAssetClass}
       />
     </div>
   );

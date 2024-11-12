@@ -1,6 +1,12 @@
 import React from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
-import { Provider } from '../../types/provider';
+
+interface Provider {
+  id: number;
+  name: string;
+  dataPoints: number;
+  updatedAt: string;
+}
 
 interface ProvidersTableProps {
   providers: Provider[];
@@ -39,10 +45,12 @@ export function ProvidersTable({ providers, onEdit, onDelete }: ProvidersTablePr
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-500">
-                  {new Date(provider.lastUpdated).toLocaleDateString('en-US', {
+                  {new Date(provider.updatedAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'short',
-                    day: 'numeric'
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
                   })}
                 </div>
               </td>
