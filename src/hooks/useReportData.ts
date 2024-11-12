@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Report } from '../types/report';
-import { DataPoint } from '../types/dataPoint';
-import { PricingSettings } from '../types/settings';
+import { Report } from '../types/report.js';
+import { DataPoint } from '../types/dataPoint.js';
+import { PricingSettings } from '../types/settings.js';
+import { fetchApi } from '../utils/api.js';
 
 interface UseReportDataReturn {
   reports: Report[];
@@ -24,11 +25,7 @@ export function useReportData(): UseReportDataReturn {
 
   const loadData = async () => {
     try {
-      const response = await fetch('/api/reports');
-      if (!response.ok) {
-        throw new Error('Failed to fetch report data');
-      }
-      const data = await response.json();
+      const data = await fetchApi('/reports');
       
       // Validate the response data
       if (!data.reports || !data.dataPoints || !data.settings?.assetClasses) {
@@ -51,18 +48,11 @@ export function useReportData(): UseReportDataReturn {
 
   const addReport = async (report: Omit<Report, 'id'>) => {
     try {
-      const response = await fetch('/api/reports', {
+      const newReport = await fetchApi('/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(report)
       });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Failed to add report' }));
-        throw new Error(errorData.error || 'Failed to add report');
-      }
-      
-      const newReport = await response.json();
       setReports(prev => [...prev, newReport]);
     } catch (error) {
       console.error('Error adding report:', error);
@@ -76,15 +66,7 @@ export function useReportData(): UseReportDataReturn {
 
   const deleteReport = async (id: number) => {
     try {
-      const response = await fetch(`/api/reports/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Failed to delete report' }));
-        throw new Error(errorData.error || 'Failed to delete report');
-      }
-      
+      await fetchApi(`/reports/${id}`, { method: 'DELETE' });
       setReports(prev => prev.filter(report => report.id !== id));
     } catch (error) {
       console.error('Error deleting report:', error);

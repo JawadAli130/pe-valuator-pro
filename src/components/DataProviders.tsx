@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
-import { ProvidersTable } from './providers/ProvidersTable';
-import { ProviderModal } from './providers/ProviderModal';
-import { Provider, ProviderFilters, filterProviders } from '../types/provider';
+import { ProvidersTable } from './providers/ProvidersTable.js';
+import { ProviderModal } from './providers/ProviderModal.js';
+import { Provider, ProviderFilters, filterProviders } from '../types/provider.js';
+import { fetchApi } from '../utils/api.js';
 
 export function DataProviders() {
   const [providers, setProviders] = useState<Provider[]>([]);
@@ -23,11 +24,7 @@ export function DataProviders() {
 
   const loadProviders = async () => {
     try {
-      const response = await fetch('/api/providers');
-      if (!response.ok) {
-        throw new Error('Failed to fetch providers');
-      }
-      const data = await response.json();
+      const data = await fetchApi('/providers');
       setProviders(data);
     } catch (error) {
       console.error('Failed to load providers:', error);
@@ -45,15 +42,11 @@ export function DataProviders() {
     }
 
     try {
-      const response = await fetch('/api/providers', {
+      await fetchApi('/providers', {
         method: modalMode === 'add' ? 'POST' : 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(currentProvider)
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to save provider');
-      }
       
       await loadProviders();
       setIsModalOpen(false);
@@ -67,14 +60,7 @@ export function DataProviders() {
   const handleDelete = async (id: number) => {
     if (confirm('Are you sure you want to delete this provider? All associated data points will also be deleted.')) {
       try {
-        const response = await fetch(`/api/providers/${id}`, {
-          method: 'DELETE'
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to delete provider');
-        }
-        
+        await fetchApi(`/providers/${id}`, { method: 'DELETE' });
         await loadProviders();
       } catch (error) {
         console.error('Failed to delete provider:', error);
@@ -83,7 +69,7 @@ export function DataProviders() {
     }
   };
 
-  const handleEdit = (provider: Provider) => {
+  const handleEdit = (provider: Partial<Provider>) => {
     setCurrentProvider(provider);
     setModalMode('edit');
     setIsModalOpen(true);

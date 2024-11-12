@@ -4,6 +4,7 @@ import { DataPointsTable } from './dataPoints/DataPointsTable.js';
 import { DataPointModal } from './dataPoints/DataPointModal.js';
 import { DataPoint, DataPointFilters, filterDataPoints, validateDataPoint } from '../types/dataPoint.js';
 import { Provider } from '../types/provider.js';
+import { fetchApi } from '../utils/api.js';
 
 export function DataPoints() {
   const [dataPoints, setDataPoints] = useState<DataPoint[]>([]);
@@ -32,11 +33,7 @@ export function DataPoints() {
 
   const loadDataPoints = async () => {
     try {
-      const response = await fetch('/api/dataPoints');
-      if (!response.ok) {
-        throw new Error('Failed to fetch data points');
-      }
-      const data = await response.json();
+      const data = await fetchApi('/dataPoints');
       setDataPoints(data);
     } catch (error) {
       console.error('Failed to load data points:', error);
@@ -48,11 +45,7 @@ export function DataPoints() {
 
   const loadProviders = async () => {
     try {
-      const response = await fetch('/api/providers');
-      if (!response.ok) {
-        throw new Error('Failed to fetch providers');
-      }
-      const data = await response.json();
+      const data = await fetchApi('/providers');
       setProviders(data);
     } catch (error) {
       console.error('Failed to load providers:', error);
@@ -62,11 +55,7 @@ export function DataPoints() {
 
   const loadAssetClasses = async () => {
     try {
-      const response = await fetch('/api/settings');
-      if (!response.ok) {
-        throw new Error('Failed to fetch asset classes');
-      }
-      const data = await response.json();
+      const data = await fetchApi('/settings');
       setAssetClasses(Object.keys(data.assetClasses));
     } catch (error) {
       console.error('Failed to load asset classes:', error);
@@ -91,35 +80,20 @@ export function DataPoints() {
       };
 
       if (modalMode === 'add') {
-        const response = await fetch('/api/dataPoints', {
+        await fetchApi('/dataPoints', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-
-        if (!response.ok) {
-          throw new Error('Failed to create data point');
-        }
-
-        await loadDataPoints();
       } else {
-        const response = await fetch(`/api/dataPoints/${currentDataPoint.id}`, {
+        await fetchApi(`/dataPoints/${currentDataPoint.id}`, {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(currentDataPoint)
         });
-
-        if (!response.ok) {
-          throw new Error('Failed to update data point');
-        }
-
-        await loadDataPoints();
       }
 
+      await loadDataPoints();
       setIsModalOpen(false);
       setCurrentDataPoint({
         provider: '',
@@ -146,13 +120,9 @@ export function DataPoints() {
     }
 
     try {
-      const response = await fetch(`/api/dataPoints/${id}`, {
+      await fetchApi(`/dataPoints/${id}`, {
         method: 'DELETE'
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete data point');
-      }
       
       await loadDataPoints();
     } catch (error) {
