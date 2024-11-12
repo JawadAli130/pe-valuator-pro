@@ -14,7 +14,7 @@ export function DataPoints() {
   const [currentDataPoint, setCurrentDataPoint] = useState<Partial<DataPoint>>({
     provider: '',
     assetClass: 'Buyout',
-    quarter: 'Q1 2024',
+    quarter: 'Q2 2024',
     minPrice: 0,
     maxPrice: 0
   });
@@ -124,7 +124,7 @@ export function DataPoints() {
       setCurrentDataPoint({
         provider: '',
         assetClass: 'Buyout',
-        quarter: 'Q1 2024',
+        quarter: 'Q2 2024',
         minPrice: 0,
         maxPrice: 0
       });
@@ -165,7 +165,7 @@ export function DataPoints() {
     setCurrentDataPoint({
       provider: '',
       assetClass: 'Buyout',
-      quarter: 'Q1 2024',
+      quarter: 'Q2 2024',
       minPrice: 0,
       maxPrice: 0
     });
