@@ -98,6 +98,7 @@ export function Reports() {
       await addReport(report);
       setIsAddModalOpen(false);
     } catch (error) {
+      console.error('Error creating report:', error);
       alert(error instanceof Error ? error.message : 'Failed to create report');
     }
   };

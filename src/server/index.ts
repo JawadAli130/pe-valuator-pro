@@ -216,29 +216,40 @@ app.get('/pricing_tool/api/reports', async (_req: Request, res: Response) => {
 
 app.post('/pricing_tool/api/reports', async (req: Request, res: Response) => {
   try {
+    const reportData = req.body;
+    
+    // Validate required fields
+    if (!reportData.name || !reportData.assetClass || !reportData.quarter) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
     const report = await prisma.report.create({
       data: {
-        name: req.body.name,
-        assetClass: req.body.assetClass,
-        quarter: req.body.quarter,
+        name: reportData.name,
+        assetClass: reportData.assetClass,
+        quarter: reportData.quarter,
         date: new Date(),
-        status: 'DRAFT',
-        marketAverage: req.body.marketAverage,
-        finalPrice: req.body.finalPrice,
-        priceRangeMin: req.body.priceRange.min,
-        priceRangeMax: req.body.priceRange.max,
-        deferralPrice: req.body.deferralPrice,
-        deferralRangeMin: req.body.deferralPriceRange.min,
-        deferralRangeMax: req.body.deferralPriceRange.max,
-        volatilityScore: req.body.volatilityScore,
+        marketAverage: reportData.marketAverage,
+        finalPrice: reportData.finalPrice,
+        priceRangeMin: reportData.priceRangeMin,
+        priceRangeMax: reportData.priceRangeMax,
+        deferralPrice: reportData.deferralPrice,
+        deferralRangeMin: reportData.deferralRangeMin,
+        deferralRangeMax: reportData.deferralRangeMax,
+        volatilityScore: reportData.volatilityScore,
         qualitativeFactors: {
-          create: req.body.qualitativeFactors
+          create: reportData.qualitativeFactors.map((factor: any) => ({
+            name: factor.name,
+            score: factor.score,
+            weight: factor.weight
+          }))
         }
       },
       include: {
         qualitativeFactors: true
       }
     });
+
     res.status(201).json(report);
   } catch (error) {
     console.error('Failed to create report:', error);
