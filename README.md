@@ -21,6 +21,53 @@ PE Valuator Pro is a web application designed to monitor and analyze secondary m
 - Lucide Icons
 - PDF Generation (jsPDF)
 - Vite Build System
+- PostgreSQL
+- Prisma ORM
+
+## Prerequisites
+
+- Node.js 18 or higher
+- PostgreSQL 14 or higher
+- npm or yarn
+
+## Database Setup
+
+1. Install PostgreSQL on your system if you haven't already:
+   ```bash
+   # For Ubuntu/Debian
+   sudo apt install postgresql
+
+   # For macOS using Homebrew
+   brew install postgresql
+   ```
+
+2. Start the PostgreSQL service:
+   ```bash
+   # For Ubuntu/Debian
+   sudo service postgresql start
+
+   # For macOS
+   brew services start postgresql
+   ```
+
+3. Create a new database:
+   ```bash
+   createdb pricing_tool
+   ```
+
+## Environment Setup
+
+1. Create a `.env` file in the root directory:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Configure your `.env` file with your PostgreSQL credentials:
+   ```
+   DATABASE_URL=postgresql://postgres:your_password@localhost:5432/pricing_tool
+   ```
+
+   Replace `your_password` with your PostgreSQL password and adjust the port number if needed.
 
 ## Getting Started
 
@@ -35,15 +82,31 @@ cd pe-valuator-pro
 npm install
 ```
 
-3. Start the development server:
+3. Initialize the database:
+```bash
+npx prisma generate
+npx prisma migrate dev
+npm run init-db
+```
+
+4. Start the development server:
 ```bash
 npm run dev
 ```
 
-4. Build for production:
+5. Build for production:
 ```bash
 npm run build
 ```
+
+## Database Schema
+
+The application uses Prisma ORM with the following main models:
+- `Provider`: Data providers and their information
+- `DataPoint`: Market pricing data points
+- `Report`: Valuation reports with pricing details
+- `QualitativeFactor`: Factors affecting valuations
+- `Settings`: Asset class-specific pricing parameters
 
 ## Usage
 
