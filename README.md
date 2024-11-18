@@ -85,8 +85,6 @@ npm install
 3. Initialize the database:
 ```bash
 npx prisma generate
-npx prisma migrate dev
-npm run init-db
 ```
 
 4. Start the development server:
