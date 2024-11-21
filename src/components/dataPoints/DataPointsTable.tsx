@@ -8,6 +8,7 @@ interface DataPointsTableProps {
 }
 
 export function DataPointsTable({ dataPoints, onEdit, onDelete }: DataPointsTableProps) {
+  
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -37,7 +38,8 @@ export function DataPointsTable({ dataPoints, onEdit, onDelete }: DataPointsTabl
           {dataPoints.map((point) => (
             <tr key={point.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">{point.provider}</div>
+              
+                <div className="text-sm text-gray-900">{point.provider.name}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">{point.assetClass}</div>

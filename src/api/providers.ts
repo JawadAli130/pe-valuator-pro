@@ -39,8 +39,22 @@ export async function updateProvider(id: number, data: Pick<Provider, 'name'>) {
   });
 }
 
-export async function deleteProvider(id: number) {
-  return prisma.provider.delete({
-    where: { id }
-  });
+
+
+
+  export async function deleteProvider(id: number) {
+    try {
+      await prisma.dataPoint.deleteMany({
+        where: { providerId: id }
+      });
+  
+      
+      return prisma.provider.delete({
+        where: { id }
+      });
+    } catch (error) {
+      console.error('Error deleting provider:', error);
+      throw new Error('Failed to delete provider');
+    }
+    
 }

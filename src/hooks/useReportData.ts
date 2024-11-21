@@ -31,7 +31,6 @@ export function useReportData(): UseReportDataReturn {
       if (!data.reports || !data.dataPoints || !data.settings?.assetClasses) {
         throw new Error('Invalid data format received from server');
       }
-      
       setReports(data.reports);
       setDataPoints(data.dataPoints);
       setSettings(data.settings);

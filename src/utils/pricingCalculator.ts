@@ -5,16 +5,21 @@ interface QualitativeFactor {
 }
 
 interface PricingSettings {
-  sMax: number;
-  aNegative: number;
-  aPositive: number;
-  m: number;
-  adjustmentPerUnit: number;
-  weights: {
-    [key: string]: number;
-    default: number;
+  assetClasses: {
+    [key: string]: {
+      sMax: number;
+      aNegative: number;
+      aPositive: number;
+      m: number;
+      adjustmentPerUnit: number;
+      weights: {
+        [key: string]: number;
+        default: number;
+      };
+    };
   };
 }
+
 
 interface DataPoint {
   minPrice: number;
@@ -32,24 +37,37 @@ export function calculateMarketAverage(dataPoints: DataPoint[]): number {
   return sum / dataPoints.length;
 }
 
+
 export function calculateQualitativeAdjustment(
   factors: QualitativeFactor[],
-  settings: PricingSettings
+  settings: PricingSettings,
+  
 ): number {
-  if (!settings?.weights) {
-    console.error('Missing weights in settings');
+
+  const assetClassSettings = settings?.assetClasses['buyout'] || settings?.assetClasses['growth']  || settings?.assetClasses['venture'] ;
+
+  // Check if assetClassSettings and weights are available
+  if (!assetClassSettings?.weights) {
+    console.error('Missing weights in settings for asset class:');
     return 0;
   }
-
+  
   const totalWeightedScore = factors.reduce((acc, factor) => {
-    const weight = settings.weights[factor.name] ?? settings.weights.default ?? 1;
+   
+    const weight = assetClassSettings.weights[factor.name] ?? assetClassSettings.weights.default ?? 1;
+   
     const x = factor.score >= 0 
-      ? (factor.score / settings.sMax) * settings.aPositive
-      : (factor.score / settings.sMax) * settings.aNegative;
+      ? (factor.score / assetClassSettings.sMax) * assetClassSettings.aPositive
+      : (factor.score / assetClassSettings.sMax) * assetClassSettings.aNegative;
     const transformedScore = Math.tanh(x);
+    console.log(assetClassSettings.aPositive)
+    console.log(assetClassSettings.sMax)
+    console.log(assetClassSettings.aNegative)
+    console.log(factor.score)
+
     return acc + (transformedScore * weight);
   }, 0);
-
+  
   return totalWeightedScore;
 }
 
@@ -84,14 +102,18 @@ export function calculateFinalPrice(
   deferralPrice: number;
   deferralPriceRange: { min: number; max: number };
 } {
+  const assetClassSettings = settings?.assetClasses['buyout'] || settings?.assetClasses['growth']  || settings?.assetClasses['venture'] ;
+
   const marketAverage = calculateMarketAverage(dataPoints);
   const qualitativeAdjustment = calculateQualitativeAdjustment(qualitativeFactors, settings);
-  
+
   // Calculate volatility multiplier
   const mappedVolatility = (volatilityScore * 2) - 5;
-  const volatilityMultiplier = Math.min(1.5, Math.max(0.5, 1 + ((mappedVolatility / 5) * settings.m)));
+  const volatilityMultiplier = Math.min(1.5, Math.max(0.5, 1 + ((mappedVolatility / 5) * assetClassSettings.m)));
+
   
-  const adjustmentAmount = qualitativeAdjustment * settings.adjustmentPerUnit * volatilityMultiplier;
+  const adjustmentAmount = qualitativeAdjustment * assetClassSettings.adjustmentPerUnit * volatilityMultiplier;
+  
   const finalPrice = Math.min(150, Math.max(0, marketAverage + adjustmentAmount));
   
   const priceRange = calculatePriceRange(finalPrice, volatilityScore, settings);

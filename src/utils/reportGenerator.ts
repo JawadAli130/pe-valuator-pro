@@ -12,7 +12,7 @@ export function generateReport(
   dataPoints: DataPoint[],
   settings: PricingSettings
 ): Report {
-  // Filter relevant data points for the asset class and quarter
+
   const relevantDataPoints = dataPoints.filter(
     point => point.assetClass === assetClass && point.quarter === quarter
   );
@@ -24,26 +24,24 @@ export function generateReport(
     volatilityScore,
     settings
   );
-
-  // Generate the report
+  
+  
   return {
-    id: Date.now(),
+    id: Date.now(), 
     name,
     assetClass,
     quarter,
-    date: new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }),
-    qualitativeFactors,
+    date: new Date().toISOString(), 
+    qualitativeFactors, 
     volatilityScore,
     marketAverage: pricingResult.marketAverage,
     finalPrice: pricingResult.finalPrice,
-    priceRange: pricingResult.priceRange,
+    priceRangeMin: pricingResult.priceRange?.min ?? 0, 
+    priceRangeMax: pricingResult.priceRange?.max ?? 0, 
     deferralPrice: pricingResult.deferralPrice,
-    deferralPriceRange: pricingResult.deferralPriceRange
+    deferralRangeMin: pricingResult.deferralPriceRange?.min ?? 0, 
+    deferralRangeMax: pricingResult.deferralPriceRange?.max ?? 0, 
   };
+  
+ 
 }

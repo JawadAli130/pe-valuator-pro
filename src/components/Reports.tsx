@@ -94,7 +94,7 @@ export function Reports() {
         dataPoints,
         { assetClasses: { [newReport.assetClass.toLowerCase()]: assetClassSettings } }
       );
-
+      
       await addReport(report);
       setIsAddModalOpen(false);
     } catch (error) {
@@ -108,18 +108,33 @@ export function Reports() {
   };
 
   const handleAddQualitativeFactor = () => {
-    if (!settings?.assetClasses) return;
-    
-    const assetClass = newReport.assetClass.toLowerCase();
-    const assetClassSettings = settings.assetClasses[assetClass];
-    
-    if (!assetClassSettings?.weights) {
-      console.error('Asset class settings or weights not found');
+    if (!settings?.assetClasses) {
+      console.error('Settings or assetClasses not found');
       return;
     }
-
-    const defaultWeight = assetClassSettings.weights.gpQuartile || 1;
     
+    
+    const assetClass = newReport.assetClass?.toLowerCase();
+    
+
+    if (!assetClass) {
+      console.error('Asset class is undefined or empty');
+      return;
+    }
+    
+    const assetClassSettings = settings.assetClasses[assetClass];
+    if (!assetClassSettings) {
+      console.error(`Asset class settings not found for ${assetClass}`);
+      return;
+    }
+  
+    if (!assetClassSettings?.weights) {
+      console.error(`Weights not found in settings for asset class: ${assetClass}`);
+      return;
+    }
+    
+    const defaultWeight = assetClassSettings.weights.gpQuartile || 1;
+  
     setNewReport(prev => ({
       ...prev,
       qualitativeFactors: [
@@ -132,7 +147,7 @@ export function Reports() {
       ]
     }));
   };
-
+  
   const handleUpdateQualitativeFactor = (
     index: number,
     field: 'name' | 'score',

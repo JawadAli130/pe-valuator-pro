@@ -22,8 +22,26 @@ export async function fetchSettings() {
 }
 
 export async function updateSettings(assetClass: string, settings: any) {
-  return prisma.settings.update({
+  
+  const existingSettings = await prisma.settings.findUnique({
     where: { assetClass },
-    data: settings
   });
+
+  if (existingSettings) {
+    
+    return prisma.settings.update({
+      where: { assetClass },
+      data: settings,
+    });
+  } else {
+    
+    return prisma.settings.create({
+      data: {
+        assetClass,
+        ...settings,  
+      },
+    });
+  }
 }
+
+
